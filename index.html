@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html><head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/107/three.js"></script> 
+<script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script>
+<script src="https://sdk.altvr.com/libs/altspace.js/2.9.0/altspace.min.js"></script>
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-database.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#config-web-app -->
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyAuBB9lnWiWANw0hILjK1HWJecTDVUndv4",
+    authDomain: "test-test-975e8.firebaseapp.com",
+    databaseURL: "https://test-test-975e8.firebaseio.com",
+    projectId: "test-test-975e8",
+    storageBucket: "",
+    messagingSenderId: "627326954446",
+    appId: "1:627326954446:web:ea28c0630e6a5106"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>
+<script>
+    var database = firebase.database();
+    var camPosDb = database.ref("camera-position");
+    var camRotDb = database.ref("camera-rotation");
+    var username;
+    var bodyMesh;
+    var bodyPos;
+    var vector;
+    console.log("test4");
+    AFRAME.registerComponent("user-body", {
+      init: function () { 
+        bodyMesh = document.getElementById("body");
+        altspace.getUser().then(function(user) {
+          username = user.displayName;
+        });
+        console.log(bodyMesh);
+        function setUserPos() {
+              database.ref("users/" + username).update({
+                x: bodyPos.x,
+                y: bodyPos.y,
+                z: bodyPos.z,
+              });
+        }
+        setInterval(setUserPos, 2000)
+      },
+      tick: function() {
+      }
+    });
+    AFRAME.registerComponent("phone-cube", {
+      init: function () {
+        console.log("test");
+         camPosDb.on("value", function(snap) {
+          var value = snap.val();
+          console.log("test");
+          document.getElementById("cube").setAttribute("position", {x: value.x, y: value.y, z: value.z});
+      });
+
+      }
+    });
+    </script>
+</head>
+<body>
+<a-scene altspace>
+  <a-assets>
+    <a-asset-item id="shareesh" src="models/shareesh.gltf">
+  </a-assets>
+  <a-plane id="cube" phone-cube scale="5 5 5" n-billboard material="src: image.png" n-billboard"></a-plane>
+</a-scene>
+
+
+</body></html>
